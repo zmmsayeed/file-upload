@@ -4,6 +4,7 @@ const fs = require('fs');
 
 module.exports = {
     signup: function(req, res) {
+        console.log("here in signup")
         aws.config.setPromisesDependency();
         aws.config.update({
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -12,11 +13,13 @@ module.exports = {
         });
 
         const s3 = new aws.S3();
+
+        let fileName = `${Date.now()}_${req.file.originalname}`;
         let  params = {
             ACL: 'public-read',
             Bucket: "file-upload-zimam",
             Body: fs.createReadStream(req.file.path),
-            Key: `userAvatar/${req.file.originalname-Date.now()})`
+            Key: `userAvatar/${fileName}`
         };
 
         s3.upload(params, (err, data) => {

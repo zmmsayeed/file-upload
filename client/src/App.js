@@ -1,32 +1,54 @@
 import React from 'react';
 import './App.css';
 
-import { Upload, message, Button  } from 'antd';
+import axios from 'axios';
+
+// import { Upload, message, Button  } from 'antd';
 
 class App extends React.Component {
-    render() {
-        let props = {
-            name: 'file',
-            action: 'http://localhost:5000',
-            onChange(info) {
-                console.log("Info: ", info);
-                if (info.file.status !== 'uploading') {
-                    console.log(info.file, info.fileList);
-                }
-                if (info.file.status === 'done') {
-                    message.success(`${info.file.name} file uploaded successfully`);
-                } else if (info.file.status === 'error') {
-                    message.error(`${info.file.name} file upload failed.`);
-                }
-            },
-        };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            file: null
+        }
+    }
+
+    changeFile = (e) => {
+        this.setState({file: e.target.files[0]})
+    }
+
+    formSubmit = (event) => {
+        event.preventDefault();
+
+        let formData = new FormData();
+        formData.append('avatar', this.state.file);
+        formData.append('email', 'zmmsayeed@gmail.com');
+        formData.append('password', 'newPaassworrrdd');
+
+        axios({
+            method: 'post',
+            url: "http://localhost:4000/api/signup",
+            data: formData,
+            headers: {'Content-Type': 'multipart/form-data'}
+        })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    render() {
         return (
             <>
-                <div>Hi</div>
-                <Upload {...props}>
-                    <Button>Click to Upload</Button>
-                </Upload>
+                <form onSubmit={this.formSubmit}>
+                    <input type="file" onChange={this.changeFile}/>
+
+                    <button type="submit">Submit</button>
+                </form>
             </>
         )
     }
